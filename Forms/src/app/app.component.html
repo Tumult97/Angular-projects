@@ -33,7 +33,7 @@
           <select 
             id="secret"
             class="form-control"
-            ngModel
+            [ngModel]="defaultQuestion"
             name="secret"
             required>
             <option value="pet">Your first Pet?</option>
