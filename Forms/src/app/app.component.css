@@ -2,7 +2,7 @@
   margin-top: 30px;
 }
 
-input.ng-invalid {
-  background-color: red;
-  color: white;
+input.ng-invalid.ng-touched, 
+select.ng-invalid.ng-touched {
+  border: 0.5px solid red;
 }
