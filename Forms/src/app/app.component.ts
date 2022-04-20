@@ -13,7 +13,26 @@ export class AppComponent {
   genders = ['male', 'female'];
 
   suggestUserName() {
+    //can use two way data binding to do this as well
     const suggestedName = 'Superuser';
+
+    //this overrides content
+    // this.signupForm.setValue({
+    //   userData: {
+    //     username: suggestedName,
+    //     email: this.signupForm.value.userData.email
+    //   },
+    //   questionData: {
+    //     secret: this.signupForm.form.value.questionData.secret,
+    //     questionAnswer: this.signupForm.value.questionData.questionAnswer
+    //   },
+    //   gender: this.signupForm.value.gender
+    // });
+
+    //This is better
+    this.signupForm.form.patchValue({userData: {
+      username: suggestedName
+    }});
   }
 
   // onSubmit(form: NgForm){
