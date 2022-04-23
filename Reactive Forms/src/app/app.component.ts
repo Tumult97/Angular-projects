@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
     // });
 
     if(this.forbiddenusernames.indexOf(control.value) !== -1){
-      return { 'Invalid string detected in username': true };
+      return { 'nameIsForbidden': true };
     }
 
     // if(match) 
