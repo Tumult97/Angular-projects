@@ -9,7 +9,7 @@ export class AppComponent {
   servers = [
     {
       instanceType: 'medium',
-      name: 'Production Server',
+      name: 'Production',
       status: 'stable',
       started: new Date(15, 1, 2017)
     },
@@ -17,7 +17,7 @@ export class AppComponent {
       instanceType: 'large',
       name: 'User Database',
       status: 'stable',
-      started: new Date(15, 1, 2017)
+      started: new Date(15, 1, 2020)
     },
     {
       instanceType: 'small',
