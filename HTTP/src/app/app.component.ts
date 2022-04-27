@@ -12,15 +12,20 @@ import { ApiService } from './api.service';
 })
 export class AppComponent implements OnInit, OnDestroy {
 	loadedPosts: Post[] = [];
-	httpPostsPostSub: Subscription;
+	errorSub: Subscription;
 	isLoading: boolean = false;
 	error: string = null;
 
 	constructor(private http: HttpClient, private apiService: ApiService) { }
 
 	ngOnInit() {
+		this.errorSub = this.apiService.errorSubject.subscribe(
+			error => {
+				this.error = error;
+			}
+		);
 		this.isLoading = true;
-		this.httpPostsPostSub = this.apiService.fetch().subscribe(
+		this.apiService.fetch().subscribe(
 			resp => {
 				this.loadedPosts = resp;
 				this.isLoading = false;
@@ -41,7 +46,7 @@ export class AppComponent implements OnInit, OnDestroy {
 	onFetchPosts() {
 		// Send Http request
 		this.isLoading = true;
-		this.httpPostsPostSub = this.apiService.fetch().subscribe(
+		this.apiService.fetch().subscribe(
 			resp => {
 				this.loadedPosts = resp;
 				this.isLoading = false;
@@ -68,6 +73,6 @@ export class AppComponent implements OnInit, OnDestroy {
 	}
 
 	ngOnDestroy(): void {
-		this.httpPostsPostSub.unsubscribe();
+		this.errorSub.unsubscribe();
 	}
 }

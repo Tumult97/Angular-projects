@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Post } from './post.model';
 
@@ -8,17 +8,19 @@ import { Post } from './post.model';
   providedIn: 'root'
 })
 export class ApiService {
-  httpPostPostSub: Subscription;
-  httpPostDeleteSub: Subscription;
+  errorSubject = new Subject<string>();
 
   constructor(private http: HttpClient) { }
 
   Add(title: String, content: string){
-    this.httpPostPostSub = this.http.post<{name: string, }>(
+    this.http.post<{name: string, }>(
 			'https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
 			{title: title, content: content}
 		).subscribe(resp => {
-      this.httpPostPostSub.unsubscribe();
+      
+    },
+    error => {
+      this.errorSubject.next(error.message);
     });
   }
 
