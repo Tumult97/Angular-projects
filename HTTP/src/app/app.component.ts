@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Post } from './post.model';
+import { ApiService } from './api.service';
 
 @Component({
 	selector: 'app-root',
@@ -12,54 +13,50 @@ import { Post } from './post.model';
 export class AppComponent implements OnInit, OnDestroy {
 	loadedPosts: Post[] = [];
 	httpPostsPostSub: Subscription;
-	httpPostsGetSub: Subscription;
 	isLoading: boolean = false;
 
-	constructor(private http: HttpClient) { }
+	constructor(private http: HttpClient, private apiService: ApiService) { }
 
 	ngOnInit() {
-		this.fetchPosts();
+		this.isLoading = true;
+		this.httpPostsPostSub = this.apiService.fetch().subscribe(
+			resp => {
+				this.loadedPosts = resp;
+				this.isLoading = false;
+			}
+		);
 	}
 
 	onCreatePost(postData: Post) {
 		// Send Http request
-		this.httpPostsPostSub = this.http.post<{name: string, }>(
-			'https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
-			postData
-		).subscribe(resp => {
-			//this.fetchPosts();
-		});
+		this.apiService.Add(postData.title, postData.content);
 	}
 
 	onFetchPosts() {
 		// Send Http request
-		this.fetchPosts();
+		this.isLoading = true;
+		this.httpPostsPostSub = this.apiService.fetch().subscribe(
+			resp => {
+				this.loadedPosts = resp;
+				this.isLoading = false;
+			}
+		);
 	}
 
 	onClearPosts() {
 		// Send Http request
+		this.apiService.delete().subscribe(
+			() => {
+				this.loadedPosts = [];
+			}
+		);
 	}
 
-	private fetchPosts() {
-		this.isLoading = true;
-		this.httpPostsGetSub = this.http
-			.get<{[key: string]: Post}>('https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
-			.pipe(map((resp) => {
-				const posts: Post[] = [];
-				for(const key in resp){
-					if(resp.hasOwnProperty(key))
-						posts.push({...resp[key], id: key});
-				}
-				return posts;
-			}))
-			.subscribe(resp => {
-				this.isLoading = false;
-				this.loadedPosts = resp;
-			});
+	onDeletePost(id: string){
+		this.apiService.deleteById(id).subscribe();;
 	}
 
 	ngOnDestroy(): void {
-		this.httpPostsGetSub.unsubscribe();
 		this.httpPostsPostSub.unsubscribe();
 	}
 }
