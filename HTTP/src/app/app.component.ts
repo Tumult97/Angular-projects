@@ -14,6 +14,7 @@ export class AppComponent implements OnInit, OnDestroy {
 	loadedPosts: Post[] = [];
 	httpPostsPostSub: Subscription;
 	isLoading: boolean = false;
+	error: string = null;
 
 	constructor(private http: HttpClient, private apiService: ApiService) { }
 
@@ -23,6 +24,11 @@ export class AppComponent implements OnInit, OnDestroy {
 			resp => {
 				this.loadedPosts = resp;
 				this.isLoading = false;
+			},
+			error => {
+				this.isLoading = false;
+				this.error = error.message;
+				console.log(error);
 			}
 		);
 	}
@@ -39,6 +45,11 @@ export class AppComponent implements OnInit, OnDestroy {
 			resp => {
 				this.loadedPosts = resp;
 				this.isLoading = false;
+				this.error = null;
+			},
+			error => {
+				this.isLoading = false;
+				this.error = error.message;
 			}
 		);
 	}
