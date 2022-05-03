@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEventType, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Subject, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Post } from './post.model';
 
 @Injectable({
@@ -15,7 +15,10 @@ export class ApiService {
   Add(title: String, content: string){
     this.http.post<{name: string, }>(
 			'https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
-			{title: title, content: content}
+			{title: title, content: content},
+      {
+        observe: 'response'
+      }
 		).subscribe(resp => {
       
     },
@@ -26,7 +29,12 @@ export class ApiService {
 
   fetch() {
     return this.http
-			.get<{[key: string]: Post}>('https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json')
+			.get<{[key: string]: Post}>(
+        'https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+        {
+          headers: new HttpHeaders({"Custom-Header": "hello"}),
+          params: new HttpParams().set('print', 'pretty')
+        })
 			.pipe(map((resp) => {
 				const posts: Post[] = [];
 				for(const key in resp){
@@ -45,7 +53,24 @@ export class ApiService {
     //   });
 
     return this.http
-      .delete('https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json');
+      .delete(
+        'https://ng-test-build-default-rtdb.europe-west1.firebasedatabase.app/posts.json',
+        {
+          observe: 'events',
+          responseType: 'text'
+        }
+      )
+      .pipe(
+        tap(event => {
+          console.log(event);
+          if(event.type === HttpEventType.Sent){
+
+          }
+          if(event.type === HttpEventType.DownloadProgress){
+
+          }
+        })
+      );
   }
 
   deleteById(id: string){
